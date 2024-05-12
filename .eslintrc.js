@@ -28,7 +28,11 @@ module.exports = {
     'no-multiple-empty-lines': 'error',
     'prefer-const': 'error',
     "simple-import-sort/imports": "error",
+    "prettier/prettier": ["error", {
+      "endOfLine": "lf" // Ensure Unix-style line endings
+    }],
   },
 };
+
 
   
