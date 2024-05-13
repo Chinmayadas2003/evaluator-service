@@ -29,7 +29,7 @@ module.exports = {
     'prefer-const': 'error',
     "simple-import-sort/imports": "error",
     "prettier/prettier": ["error", {
-      "endOfLine": "lf" // Ensure Unix-style line endings
+      "endOfLine": "auto" // Automatically determine endOfLine setting
     }],
   },
 };
