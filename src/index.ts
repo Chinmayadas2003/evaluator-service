@@ -3,6 +3,7 @@ import express, { Express, Request, response } from "express";
 
 import bullBoardAdapter from "./config/bullBoardConfig";
 import serverConfig from "./config/serverConfig";
+import { runPython } from "./containers/runPythonDocker";
 import sampleQueueProducer from "./producers/sampleQueueProducer";
 import sampleQueue from "./queues/sampleQueue";
 import apiRouter from "./routes";
@@ -24,8 +25,8 @@ app.listen(serverConfig.PORT, () => {
     `BullBoard dashboard running on: http://localhost:${serverConfig.PORT}/ui`,
   );
 
-  SampleWorker("SampleQueue");
-
+  //SampleWorker("SampleQueue");
+  /*
   sampleQueueProducer(
     "SampleJob",
     {
@@ -45,7 +46,12 @@ app.listen(serverConfig.PORT, () => {
       position: "SDE 2 L61",
       location: "Remote||BLR",
     },
-    //lower priority is higher(better)
+    //lower priority is higher(better
     1,
   );
+  */ //
+  //note the indentation level very carefully to avoid error ;
+  const code1 = `x = int(input())\nprint("value of x is", x)\nfor i in range(int(x)):\n  print(x+1)\n  x += 1`;
+  const code = `x = int(input())\nprint("value of x is", x)\nfor i in range(int(x)):\n    print(x + 1)\n    x += 1`;
+  runPython(code1, "100");
 });
