@@ -5,15 +5,16 @@ import { PYTHON_IMAGE } from "../utils/constants";
 import createContainer from "./containerFactory";
 import decodeDockerStream from "./dockerHelper";
 
-const rawlogBuffer: any[] = [];
+const rawLogBuffer: any[] = [];
 
 export async function runPython(code: string, inputTestCase: string) {
   console.log("Initializing a new python docker container");
 
   // Properly escape the code and inputTestCase to be safely used in the shell command
-  //regex function regular expression g is global flag for a specific character
-  const escapedCode = code.replace(/"/g, '\\"');//.replace(/\n/g, "\\n");
-  const escapedInput = inputTestCase;
+  //regex function regular expression g is global flag for a sepecifc character
+  const escapedCode = code.replace(/"/g, '\\"').replace(/\n/g, "\\n");
+  const escapedInput = inputTestCase.replace(/"/g, '\\"');
+
   const runCommand = `echo "${escapedCode}" > test.py && echo "${escapedInput}" | python3 test.py`;
   console.log(runCommand);
 
@@ -33,18 +34,24 @@ export async function runPython(code: string, inputTestCase: string) {
     follow: true, // whether the logs are streamed or returned as a string
   });
 
-  // attach events on the stream object to start and stop reading
+  // Attach events on the stream objects to start and stop reading
   loggerStream.on("data", (chunk) => {
-    rawlogBuffer.push(chunk);
-  });
-  loggerStream.on("end", () => {
-    console.log(rawlogBuffer);
-    const completeBuffer = Buffer.concat(rawlogBuffer);
-    const decodedStream = decodeDockerStream(completeBuffer);
-    console.log(decodedStream);
+    rawLogBuffer.push(chunk);
   });
 
-  return pythonDockerContainer;
+  await new Promise((res) => {
+    loggerStream.on("end", () => {
+      console.log(rawLogBuffer);
+      const completeBuffer = Buffer.concat(rawLogBuffer);
+      const decodedStream = decodeDockerStream(completeBuffer);
+      console.log(decodedStream);
+      console.log(decodedStream.stdout);
+      res(decodeDockerStream);
+    });
+  });
+
+  // remove the container when done with it
+  await pythonDockerContainer.remove();
 }
 
 export default runPython;
