@@ -4,10 +4,12 @@ import { TestCases } from "../types/testCases";
 import { PYTHON_IMAGE } from "../utils/constants";
 import createContainer from "./containerFactory";
 import decodeDockerStream from "./dockerHelper";
+import pullImage from "./pullImage";
 
 const rawLogBuffer: any[] = [];
 
 export async function runPython(code: string, inputTestCase: string) {
+  await pullImage(PYTHON_IMAGE);
   console.log("Initializing a new python docker container");
 
   // Properly escape the code and inputTestCase to be safely used in the shell command

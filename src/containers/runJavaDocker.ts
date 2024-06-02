@@ -4,11 +4,12 @@
 import { JAVA_IMAGE } from "../utils/constants";
 import createContainer from "./containerFactory";
 import decodeDockerStream from "./dockerHelper";
+import pullImage from "./pullImage";
 
 async function runJava(code: string, inputTestCase: string) {
   const rawLogBuffer: Buffer[] = [];
 
-  //await pullImage(JAVA_IMAGE);
+  await pullImage(JAVA_IMAGE);
 
   console.log("Initialising a new java docker container");
   const runCommand = `echo '${code.replace(/'/g, `'\\"`)}' > Main.java && javac Main.java && echo '${inputTestCase.replace(/'/g, `'\\"`)}' | java Main`;
