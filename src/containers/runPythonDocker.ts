@@ -13,6 +13,7 @@ export async function runPython(code: string, inputTestCase: string) {
   // Properly escape the code and inputTestCase to be safely used in the shell command
   //regex function regular expression g is global flag for a sepecifc character
   const escapedCode = code.replace(/"/g, '\\"').replace(/\n/g, "\\n");
+  //this is a done a bit differently than in course replace it in case of the error
   const escapedInput = inputTestCase.replace(/"/g, '\\"');
 
   const runCommand = `echo "${escapedCode}" > test.py && echo "${escapedInput}" | python3 test.py`;
