@@ -7,9 +7,11 @@ import runCpp from "./containers/runCpp";
 import runJava from "./containers/runJavaDocker";
 import { runPython } from "./containers/runPythonDocker";
 import sampleQueueProducer from "./producers/sampleQueueProducer";
+import submissionQueueProducer from "./producers/submissionQueueProducer";
 import sampleQueue from "./queues/sampleQueue";
 import apiRouter from "./routes";
 import SampleWorker from "./workers/SampleWorker";
+import SubmissionWorker from "./workers/SubmissionWorker";
 
 const app: Express = express(); //it also can implicitly understand the express type
 
@@ -27,10 +29,10 @@ app.listen(serverConfig.PORT, () => {
     `BullBoard dashboard running on: http://localhost:${serverConfig.PORT}/ui`,
   );
 
-  //SampleWorker("SampleQueue");
-  /*
+  SampleWorker("SampleQueue");
+
   sampleQueueProducer(
-    "SampleJob",
+    "1234",
     {
       name: "Sarthak",
       company: "Razorpay",
@@ -51,43 +53,53 @@ app.listen(serverConfig.PORT, () => {
     //lower priority is higher(better
     1,
   );
-  */ //
+  //
   //note the indentation level very carefully to avoid error ;
   /*
   const code1 = `x = int(input())\nprint("value of x is", x)\nfor i in range(int(x)):\n  print(x+1)\n  x += 1`;
   const code = `x = int(input())\nprint("value of x is", x)\nfor i in range(int(x)):\n    print(x + 1)\n    x += 1`;
   runPython(code1, "100");
   */
-  const code2 = `
- import java.util.*;
 
-public class Main {
-    public static void main(String[] args) {
-        Scanner scn = new Scanner(System.in);
-        int input = scn.nextInt();
-        System.out.println("Input value given by user: " + input);
-        for (int i = 0; i < input; i++) {
-            System.out.println(i);
-        }
-    }
-}
-`;
+  const code = `
+  import java.util.*;
+  public class Main {
+      public static void main(String[] args) {
+           Scanner scn = new Scanner(System.in);
+           int input = scn.nextInt();
+           System.out.println("Input value given by user: " + input);
+           for (int i = 0; i < input; i++) {
+               System.out.println(i);
+           }
+       }
+  }
+   `;
   const code3 = `
-#include <iostream>
-using namespace std;
-int main() {
-    int input;
-    std::cin >> input;
-    std::cout << "Input value given by user: " << input << std::endl;
-    for (int i = 0; i < input; ++i) {
-        std::cout << i << " ";
-    }
-    return 0;
-}
+   #include <iostream>
+   using namespace std;
+   int main() {
+       int input;
+       std::cin >> input;
+       std::cout << "Input value given by user: " << input << std::endl;
+       for (int i = 0; i < input; ++i) {
+           std::cout << i << " ";
+       }
+       return 0;
+   }
 
-`;
+   `;
   //use of stub by problem setter why we have to write function and not care about how it is output being printed
   const inputCase = `100 `;
   //runJava(code2, inputCase);
-  runCpp(code3, inputCase);
+  //runJava(code2, inputCase);
+
+  SubmissionWorker("SubmissionQueue");
+
+  submissionQueueProducer({
+    "1234": {
+      language: "Java",
+      inputCase,
+      code,
+    },
+  });
 });

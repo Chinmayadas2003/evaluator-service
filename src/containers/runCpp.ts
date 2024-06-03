@@ -1,32 +1,30 @@
 // import Docker from 'dockerode';
 
 // import { TestCases } from '../types/testCases';
-import { CPP_IMAGE, JAVA_IMAGE } from "../utils/constants";
+import { CPP_IMAGE } from "../utils/constants";
 import createContainer from "./containerFactory";
 import decodeDockerStream from "./dockerHelper";
 import pullImage from "./pullImage";
-//import pullImage from "./pullImage";
 
 async function runCpp(code: string, inputTestCase: string) {
   const rawLogBuffer: Buffer[] = [];
 
+  console.log("Initialising a new cpp docker container");
   await pullImage(CPP_IMAGE);
-
-  console.log("Initialising a new c++ docker container");
-  const runCommand = `echo '${code.replace(/'/g, `'\\"`)}' > main.cpp && g++ main.cpp -o main && echo '${inputTestCase.replace(/'/g, `'\\"`)}' | stdbuf -oL -eL ./main`;
+  const runCommand = `echo '${code.replace(/'/g, `'\\"`)}' > main.cpp && g++ main.cpp -o main && echo '${inputTestCase.replace(/'/g, `'\\"`)}' | ./main`;
   console.log(runCommand);
-  const CppDockerContainer = await createContainer(CPP_IMAGE, [
+  const cppDockerContainer = await createContainer(CPP_IMAGE, [
     "/bin/sh",
     "-c",
     runCommand,
   ]);
 
   // starting / booting the corresponding docker container
-  await CppDockerContainer.start();
+  await cppDockerContainer.start();
 
   console.log("Started the docker container");
 
-  const loggerStream = await CppDockerContainer.logs({
+  const loggerStream = await cppDockerContainer.logs({
     stdout: true,
     stderr: true,
     timestamps: false,
@@ -38,19 +36,20 @@ async function runCpp(code: string, inputTestCase: string) {
     rawLogBuffer.push(chunk);
   });
 
-  await new Promise((res) => {
+  const response = await new Promise((res) => {
     loggerStream.on("end", () => {
       console.log(rawLogBuffer);
       const completeBuffer = Buffer.concat(rawLogBuffer);
       const decodedStream = decodeDockerStream(completeBuffer);
       console.log(decodedStream);
       console.log(decodedStream.stdout);
-      res(decodeDockerStream);
+      res(decodedStream);
     });
   });
 
   // remove the container when done with it
-  await CppDockerContainer.remove();
+  await cppDockerContainer.remove();
+  return response;
 }
 
 export default runCpp;
