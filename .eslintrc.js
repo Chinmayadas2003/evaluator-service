@@ -22,7 +22,7 @@ module.exports = {
   rules: {
     'no-unused-vars': 'warn',
     'no-var': 'error',
-    semi: ['error', 'always'],
+    //semi: ['error', 'always'],
     'no-multi-spaces': 'error',
     'space-in-parens': 'error',
     'no-multiple-empty-lines': 'error',

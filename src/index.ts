@@ -3,9 +3,9 @@ import express, { Express, Request, response } from "express";
 
 import bullBoardAdapter from "./config/bullBoardConfig";
 import serverConfig from "./config/serverConfig";
+import runJava from "./containers/javaExecutor";
 import runCpp from "./containers/runCpp";
-import runJava from "./containers/runJavaDocker";
-import { runPython } from "./containers/runPythonDocker";
+//import { PythonExecutor } from "./containers/pythonExecutor";
 import sampleQueueProducer from "./producers/sampleQueueProducer";
 import submissionQueueProducer from "./producers/submissionQueueProducer";
 import sampleQueue from "./queues/sampleQueue";
@@ -100,6 +100,7 @@ app.listen(serverConfig.PORT, () => {
       language: "Java",
       inputCase,
       code,
+      //outputCase,
     },
   });
 });
